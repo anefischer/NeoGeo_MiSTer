@@ -48,8 +48,8 @@ assign {SD_SCK, SD_MOSI, SD_CS} = 'Z;
 
 assign AUDIO_S   = 1;		// Signed
 assign AUDIO_MIX = status[6:5];
-assign AUDIO_L = snd_mix_l[16:1];
-assign AUDIO_R = snd_mix_r[16:1];
+assign AUDIO_L = (snd_mix_l[16] != snd_mix_l[15]) ? {snd_mix_l[16], {15{~snd_mix_l[16]}}} : snd_mix_l[15:0];
+assign AUDIO_R = (snd_mix_r[16] != snd_mix_r[15]) ? {snd_mix_r[16], {15{~snd_mix_r[16]}}} : snd_mix_r[15:0];
 
 assign LED_USER  = status[0] | bk_pending;
 assign LED_DISK  = 0;

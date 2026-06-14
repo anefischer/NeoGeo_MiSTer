@@ -63,9 +63,9 @@ module neo_f0(
 	assign RTC_STROBE = REG_RTCCTRL[2];
 	
 	// REG_DIPSW $300001~?, odd bytes
-	// REG_SYSTYPE $300081~?, odd bytes (TODO: Test switch and stuff... Neutral for now)
+	// REG_SYSTYPE $300081~?, odd bytes
 	assign M68K_DATA = nDIPRD0 ? 8'bzzzzzzzz :
-								(M68K_ADDR[7]) ? 8'b10000000 :
+								(M68K_ADDR[7]) ? 8'b11000000 :
 								DIPSW;
 	
 	// REG_STATUS_A $320001~?, odd bytes

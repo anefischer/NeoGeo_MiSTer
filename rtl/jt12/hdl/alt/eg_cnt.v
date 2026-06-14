@@ -60,7 +60,7 @@ end
 always @(posedge clk) if( clk_en ) begin
 	if( rst ) begin
 		state_V	<= RELEASE;
-		rate_V <= 6'h1F; // should it be 6'h3F? TODO
+		rate_V <= 6'h02;
 		//cnt_V<= 3'd0;
 	end
 	else begin
