@@ -81,17 +81,17 @@ reg        ram_write = 0;
 reg  [7:0] ram_wr_be;
 
 reg [2:0]  state  = 0;
-reg [1:0]  ch = 0; 
+reg [1:0]  ch = 0;
 
 reg [2:0]  cache_valid;
 
+reg [6:0]  cp_remaining = 0;
+reg        cp_active = 0;
+reg [27:0] cp_address;
+
 always @(posedge DDRAM_CLK) begin
 	reg old_cpreq;
-	reg [6:0] cpcnt;
-
-	if (cache_reset) begin
-		cache_valid <= 3'b000;
-	end
+	reg [2:0] cpcnt;
 
 	cpwr <= 0;
 	if(!DDRAM_BUSY) begin
@@ -181,15 +181,24 @@ always @(posedge DDRAM_CLK) begin
 						ch 			<= 2;
 						state       <= 2;
 					end 
+				end else if(cp_active) begin
+					ram_address <= cp_address;
+					ram_burst   <= 8;
+					ram_read    <= 1;
+					state       <= 4;
+					cpcnt       <= 7;
 				end else begin
 					cpbusy         <= 0;
 					old_cpreq <= cpreq;
 					if(~old_cpreq & cpreq) begin
+						cp_address  <= {cpaddr[27:3],3'b000};
+						cp_remaining <= 7'd120;
+						cp_active   <= 1;
 						ram_address <= {cpaddr[27:3],3'b000};
-						ram_burst   <= 128;
+						ram_burst   <= 8;
 						ram_read    <= 1;
 						state       <= 4;
-						cpcnt       <= 127;
+						cpcnt       <= 7;
 						cpbusy      <= 1;
 					end
 				end
@@ -237,11 +246,24 @@ always @(posedge DDRAM_CLK) begin
 
 			4: if(DDRAM_DOUT_READY) begin
 					cpwr   <= 1;
-					cpcnt  <= cpcnt - 1'd1;
+					cpcnt  <= cpcnt - 3'd1;
 					cpdout <= DDRAM_DOUT;
-					if(!cpcnt) state <= 0;
+					if(!cpcnt) begin
+						if(cp_remaining) begin
+							cp_address   <= cp_address + 28'd64;
+							cp_remaining <= cp_remaining - 7'd8;
+							state        <= 0;
+						end else begin
+							cp_active <= 0;
+							state     <= 0;
+						end
+					end
 				end
 		endcase
+	end
+
+	if (cache_reset) begin
+		cache_valid <= 3'b000;
 	end
 end
 

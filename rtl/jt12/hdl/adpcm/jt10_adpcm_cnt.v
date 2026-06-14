@@ -91,10 +91,10 @@ always @(posedge clk or negedge rst_n)
         end
     end
 
-always @(posedge clk or negedge rst_n) 
+always @(posedge clk or negedge rst_n)
     if( !rst_n ) begin
         flags <= 6'd0;
-    end else begin
+    end else if(cen) begin
         flags <= ~clr_flags & (set_flags | flags);
     end
 

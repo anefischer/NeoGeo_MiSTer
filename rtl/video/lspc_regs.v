@@ -52,6 +52,7 @@ module lspc_regs_sync(
 	output TIMER_IRQ_EN,				// Timer interrupt enable
 	output AA_DISABLE,				// Auto-animation disable
 	output TIMER_STOP,
+	output WR_TIMER_STOP_OUT,
 	output nVRAM_WRITE_REQ,
 	input VRAM_WRITE_ACK //D112B_OUT
 );
@@ -88,6 +89,7 @@ module lspc_regs_sync(
 	assign WR_TIMER_LOW = WR_DECODED[5];
 	assign WR_IRQ_ACK = WR_DECODED[6];
 	wire WR_TIMER_STOP = WR_DECODED[7];
+	assign WR_TIMER_STOP_OUT = WR_TIMER_STOP;
 	
 	
 	// CPU reads
@@ -160,6 +162,6 @@ module lspc_regs_sync(
 	register #(5) E74_E61(CLK, 1'b0, ~RESET, WR_LSPC_MODE, M68K_DATA[7:3], {TIMER_MODE, TIMER_IRQ_EN, AA_DISABLE});
 	// CPU write to REG_TIMERSTOP
 	//FDPCell D34(WR_TIMER_STOP, M68K_DATA[0], RESETP, 1'b1, , TIMER_STOP);
-	register D34(CLK, ~RESETP, 1'b0, WR_TIMER_STOP, M68K_DATA[0], TIMER_STOP);
+	register D34(CLK, 1'b0, ~RESETP, WR_TIMER_STOP, M68K_DATA[0], TIMER_STOP);
 
 endmodule

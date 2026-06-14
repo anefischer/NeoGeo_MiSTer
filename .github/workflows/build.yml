@@ -1,0 +1,25 @@
+name: Build NeoGeo Core
+
+on:
+  push:
+    branches: ['fixes/**']
+  workflow_dispatch:
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    container:
+      image: raetro/quartus:17.0
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compile
+        run: quartus_sh --flow compile NeoGeo
+
+      - name: Upload RBF
+        uses: actions/upload-artifact@v4
+        with:
+          name: NeoGeo_test
+          path: output_files/NeoGeo.rbf

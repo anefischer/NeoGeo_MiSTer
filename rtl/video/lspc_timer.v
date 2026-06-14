@@ -37,6 +37,7 @@ module lspc_timer_sync(
 	input TIMER_IRQ_EN,
 	input R74_nQ_EN,
 	input BNKB,
+	input WR_TIMER_STOP,
 	output D46A_OUT
 );
 	
@@ -157,11 +158,21 @@ module lspc_timer_sync(
 	
 	wire nRELOAD = ~|{RELOAD_MODE0, RELOAD_MODE1, RELOAD_MODE2};
 	
+	// Inhibit timer until CPU first writes TIMER_STOP register.
+	// Bridges the SDRAM startup latency gap where the 68K hasn't
+	// initialized the timer yet but the LSPC2 is already running.
+	reg timer_armed;
+	always @(posedge CLK, negedge nRESETP)
+		if (!nRESETP)
+			timer_armed <= 0;
+		else if (WR_TIMER_STOP)
+			timer_armed <= 1;
+
 	// Stop option
 	wire J257A_OUT = ~|{RASTERC[5:4]};
 	wire I234_OUT = |{RASTERC[8], ~VMODE, ~TIMER_STOP};
 	wire J238B_OUT = ~|{J257A_OUT, I234_OUT};
 	//FDM J69(LSPC_6M, J238B_OUT, , nTIMER_EN);
-	always @(posedge CLK) if (LSPC_EN_6M_P) nTIMER_EN <= ~J238B_OUT;
+	always @(posedge CLK) if (LSPC_EN_6M_P) nTIMER_EN <= ~J238B_OUT & timer_armed;
 
 endmodule

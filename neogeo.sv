@@ -1467,8 +1467,8 @@ neo_g0 G0(
 	.CDD({8'hFF, CDD}), .PC(PAL_RAM_DATA)
 );
 
-wire [11:0] joy_0a = P1_OUT[0] ? (joystick_2[11:0] | {P1_OUT[2],5'b00000}) : (joystick_0[11:0] | {P1_OUT[2],4'b0000});
-wire [11:0] joy_1a = P1_OUT[0] ? (joystick_3[11:0] | {P1_OUT[2],5'b00000}) : (joystick_1[11:0] | {P1_OUT[2],4'b0000});
+wire [11:0] joy_0a = P1_OUT[0] ? (joystick_2[11:0] | {2'b0, P1_OUT[2], 9'b0}) : (joystick_0[11:0] | {2'b0, P1_OUT[2], 9'b0});
+wire [11:0] joy_1a = P1_OUT[0] ? (joystick_3[11:0] | {2'b0, P1_OUT[2], 9'b0}) : (joystick_1[11:0] | {2'b0, P1_OUT[2], 9'b0});
 
 wire [11:0] joy_0b = ({12{P1_OUT[0]}} & joystick_0[11:0]) | ({12{P1_OUT[1]}} & joystick_2[11:0]) | {P1_OUT[2], 9'd0};
 wire [11:0] joy_1b = ({12{P2_OUT[0]}} & joystick_1[11:0]) | ({12{P2_OUT[1]}} & joystick_3[11:0]) | {P2_OUT[2], 9'd0};

@@ -422,6 +422,7 @@ always @(posedge clk) begin : memory_mapped_registers
             { clr_flag_B, clr_flag_A } <= 2'd0;
             psg_wr_n <= 1'b1;
             pcm_wr   <= 1'b0;
+            flag_ctl <= 'd0;
             up_aon   <= 1'b0;
             acmd_up_b <= 1'b0;
         end
